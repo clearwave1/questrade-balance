@@ -1,14 +1,16 @@
-FROM eclipse-temurin:21-jdk AS build
-WORKDIR /build
-COPY pom.xml .
-COPY src ./src
-RUN apt-get update && apt-get install -y maven && mvn package -DskipTests -q
+FROM registry.access.redhat.com/ubi8/openjdk-21:1.20
 
-FROM eclipse-temurin:21-jre
-WORKDIR /app
-COPY --from=build /build/target/quarkus-app/lib/ ./lib/
-COPY --from=build /build/target/quarkus-app/*.jar ./
-COPY --from=build /build/target/quarkus-app/app/ ./app/
-COPY --from=build /build/target/quarkus-app/quarkus/ ./quarkus/
+ENV LANGUAGE='en_US:en'
+
+COPY --chown=185 target/quarkus-app/lib/ /deployments/lib/
+COPY --chown=185 target/quarkus-app/*.jar /deployments/
+COPY --chown=185 target/quarkus-app/app/ /deployments/app/
+COPY --chown=185 target/quarkus-app/quarkus/ /deployments/quarkus/
+
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "quarkus-run.jar"]
+USER 185
+
+ENV JAVA_OPTS_APPEND="-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager"
+ENV JAVA_APP_JAR="/deployments/quarkus-run.jar"
+
+ENTRYPOINT [ "/opt/jboss/container/java/run/run-java.sh" ]
