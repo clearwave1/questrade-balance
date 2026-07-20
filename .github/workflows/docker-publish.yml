@@ -43,4 +43,4 @@ jobs:
           context: .
           push: true
           tags: ghcr.io/${{ github.repository }}:latest
-          file: ${{ github.workspace }}/src/main/docker/Dockerfile.jvm
+          file: ${{ github.workspace }}/Dockerfile
