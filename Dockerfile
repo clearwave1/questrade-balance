@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/ubi8/openjdk-21:1.20
+FROM eclipse-temurin:25-jammy
 
 ENV LANGUAGE='en_US:en'
 
